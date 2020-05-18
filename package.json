@@ -1,7 +1,7 @@
 {
 	"name": "speakup",
 	"version": "1.0.0",
-	"description": "speakUp Blog App",
+	"description": "speakUp Blog App Development",
 	"main": "app.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",

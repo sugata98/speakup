@@ -9,7 +9,7 @@
   <li>jQuery</li>
   <li>Node JS</li>
   <li>EXpress JS</li>
-  <li>MongoDB/li>
+  <li>MongoDB</li>
   <li><em>Authentication</em> using PassportJS</li>
 </ul>
 

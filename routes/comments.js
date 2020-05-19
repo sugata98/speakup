@@ -22,6 +22,7 @@ router.post('/', middleware.isLoggedIn, function(req, res) {
 			console.log(err);
 			redirect('/blogs');
 		} else {
+			req.body.comment.text = req.sanitize(req.body.comment.text);
 			Comment.create(req.body.comment, function(err, comment) {
 				if (err) {
 					req.flash('error', 'Something went wrong');
@@ -51,6 +52,7 @@ router.get('/:comment_id/edit', middleware.checkCommentOwnership, function(req, 
 });
 
 router.put('/:comment_id', middleware.checkCommentOwnership, function(req, res) {
+	req.body.comment.text = req.sanitize(req.body.comment.text);
 	Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, function(err, updatedComment) {
 		if (err) {
 			res.redirect('back');

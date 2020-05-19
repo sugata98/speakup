@@ -66,6 +66,7 @@ router.post('/', middleware.isLoggedIn, upload.single('image'), function(req, re
 			id: req.user._id,
 			username: req.user.username
 		};
+		req.body.blog.description = req.sanitize(req.body.blog.description);
 		Blog.create(req.body.blog, function(err, blog) {
 			if (err) {
 				req.flash('error', err.message);
@@ -119,7 +120,7 @@ router.put('/:id', middleware.checkBlogOwnership, upload.single('image'), functi
 				}
 			}
 			blog.name = req.body.blog.name;
-			blog.description = req.body.blog.description;
+			blog.description = req.sanitize(req.body.blog.description);
 			blog.save();
 			req.flash('success', 'Successfully Updated!');
 			res.redirect('/blogs/' + req.params.id);

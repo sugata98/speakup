@@ -3,13 +3,11 @@ var express = require('express'),
 	bodyParser = require('body-parser'),
 	mongoose = require('mongoose'),
 	flash = require('connect-flash'),
-	// Blog = require('./models/blog'),
-	// Comment = require('./models/comment'),
+	expressSanitizer = require('express-sanitizer'),
 	methodOverride = require('method-override'),
 	passport = require('passport'),
 	LocalStrategy = require('passport-local'),
 	User = require('./models/user');
-// seedDB = require('./seeds');
 
 //requiring routes
 var commentRoutes = require('./routes/comments'),
@@ -24,7 +22,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 app.use(methodOverride('_method'));
 app.use(flash());
-// seedDB();
+app.use(expressSanitizer());
 
 app.locals.moment = require('moment');
 

@@ -32,7 +32,7 @@
                                     <li>
                                         <img class="img-thumbnail" src="<%= blog.image %>" />
                                         <h3><a href="/blogs/<%= blog.id %>"><%= blog.name %></a></h3>
-                                        <p><%= blog.description.substring(0,130) %>...</p>
+                                        <p><%- blog.description.substring(0,130) %>...</p>
                                     </li>
                                 <% }) %>
                         <% } %>

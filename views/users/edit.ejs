@@ -8,24 +8,32 @@
     
     <div class="col-xs-12 col-md-6 col-lg-6">
         <div class="form-login">
-        <form action="/users/<%= user.id %>?_method=PUT" method="POST">
-            <label for="firstName">First Name</label>
+        <form action="/users/<%= user.id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+            
             <div class="form-group">
+                <label for="firstName">First Name</label>
                 <input class="form-control" type="text" name="firstName" value="<%= user.firstName %>">
             </div>
-            <label for="lastName">Last Name</label>
+            
             <div class="form-group">
+                <label for="lastName">Last Name</label>
                 <input class="form-control" type="text" name="lastName" value="<%= user.lastName %>">
             </div>
-            <label for="email">Email Address</label>
+            
             <div class="form-group">
+                <label for="email">Email Address</label>
                 <input class="form-control" type="email" name="email" value="<%= user.email %>">
             </div>
-            <label for="bio">Bio</label> 
-            <textarea class="form-control" type="bio" name="bio" rows="5"><%= user.bio %></textarea>
-            <label for="avatar">Avatar</label>
+
             <div class="form-group">
-                <input class="form-control" type="text" name="avatar" value="<%= user.avatar %>">
+                <label for="bio">Bio</label> 
+                <textarea class="form-control" type="bio" name="bio" rows="5"><%= user.bio %></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Avatar</label>
+                <input class="form-control" type="file" id="image" name="image" accept="image/*">
+                <!-- <input class="form-control" type="text" name="avatar" value="<%# user.avatar %>"> -->
             </div>
             <div class="form-group">
                 <button class="btn btn-lg btn-primary btn-block">Submit!</button>

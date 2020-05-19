@@ -7,16 +7,16 @@
             </div>
             <div class="container col-md-6">
                 <div class="form-login">
-                    <form action="/register" method="post">
+                    <form action="/register" method="post" enctype="multipart/form-data">
                         
                         <div class="form-group">
                             <label for="username">Username</label>
-                            <input class="form-control" type="text" name="username" placeholder="Type your username here">
+                            <input class="form-control" type="text" name="username" placeholder="Type your username here" required>
                         </div>
                         
                         <div class="form-group">
                             <label for="password">Password</label>
-                            <input class="form-control" type="password" name="password" placeholder="Type your password here">
+                            <input class="form-control" type="password" name="password" placeholder="Type your password here" required>
                         </div>
 
                         <div class="form-group">
@@ -26,7 +26,7 @@
 
                         <div class="form-group">
                             <label for="firstName">First Name</label>
-                            <input class="form-control" type="text" name="firstName" placeholder="First Name">
+                            <input class="form-control" type="text" name="firstName" placeholder="First Name" required>
                         </div>
                         
                         <div class="form-group">
@@ -36,15 +36,16 @@
                         
                         <div class="form-group">
                             <label for="email">Email Address</label>
-                            <input class="form-control" type="email" name="email" placeholder="hello@world.com">
+                            <input class="form-control" type="email" name="email" placeholder="hello@world.com" required>
                         </div>
                         <div class="form-group">
                             <label for="bio">Bio</label> 
                             <textarea class="form-control" type="bio" name="bio" rows="4" placeholder="Add Your Bio"></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="avatar">Avatar</label>
-                            <input class="form-control" type="text" name="avatar" placeholder="Avatar image url">
+                            <label for="image">Avatar</label>
+                            <input class="form-control" type="file" id="image" name="image" accept="image/*" required>
+                            <!-- <input class="form-control" type="text" name="avatar" placeholder="Avatar image url"> -->
                         </div>
                         <div class="form-group">
                             <button class="btn btn-lg btn-primary btn-block">Sign Up!</button>

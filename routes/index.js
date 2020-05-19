@@ -3,6 +3,27 @@ var router = express.Router();
 var passport = require('passport');
 var User = require('../models/user');
 var Blog = require('../models/blog');
+var multer = require('multer');
+var storage = multer.diskStorage({
+	filename: function(req, file, callback) {
+		callback(null, Date.now() + file.originalname);
+	}
+});
+var imageFilter = function(req, file, cb) {
+	// accept image files only
+	if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+		return cb(new Error('Only image files are allowed!'), false);
+	}
+	cb(null, true);
+};
+var upload = multer({ storage: storage, fileFilter: imageFilter });
+
+var cloudinary = require('cloudinary');
+cloudinary.config({
+	cloud_name: 'speak-up',
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 //root route
 router.get('/', function(req, res) {
@@ -15,32 +36,46 @@ router.get('/register', function(req, res) {
 });
 
 //handle sign up logic
-router.post('/register', function(req, res) {
-	var newUser = new User({
-		username: req.body.username,
-		firstName: req.body.firstName,
-		lastName: req.body.lastName,
-		email: req.body.email,
-		avatar: req.body.avatar,
-		bio: req.body.bio
-	});
-	if (req.body.adminCode === process.env.ADMIN_CODE) {
-		newUser.isAdmin = true;
-	}
-	User.register(newUser, req.body.password, function(err, user) {
+router.post('/register', upload.single('image'), function(req, res) {
+	cloudinary.v2.uploader.upload(req.file.path, function(err, result) {
 		if (err) {
 			req.flash('error', err.message);
-			return res.redirect('/register');
+			return res.redirect('back');
 		}
-		passport.authenticate('local')(req, res, function() {
-			if (newUser.isAdmin) {
-				console.log(user.username);
-				req.flash('success', 'Successfully Signed Up to SpeakUP! ' + user.username + ", You're an Admin!");
-			} else {
-				console.log(user.username);
-				req.flash('success', 'Successfully Signed Up to SpeakUP! ' + user.username);
+		// add cloudinary url for the image to the blog object under image property
+		req.body.avatar = result.secure_url;
+		// add image's public_id to blog object
+		req.body.avatarId = result.public_id;
+
+		var newUser = new User({
+			username: req.body.username,
+			firstName: req.body.firstName,
+			lastName: req.body.lastName,
+			email: req.body.email,
+			avatar: req.body.avatar,
+			avatarId: req.body.avatarId,
+			bio: req.body.bio
+		});
+
+		if (req.body.adminCode === process.env.ADMIN_CODE) {
+			newUser.isAdmin = true;
+		}
+
+		User.register(newUser, req.body.password, function(err, user) {
+			if (err) {
+				req.flash('error', err.message);
+				return res.redirect('/register');
 			}
-			res.redirect('/blogs');
+			passport.authenticate('local')(req, res, function() {
+				if (newUser.isAdmin) {
+					console.log(user.username);
+					req.flash('success', 'Successfully Signed Up to SpeakUP! ' + user.username + ", You're an Admin!");
+				} else {
+					console.log(user.username);
+					req.flash('success', 'Successfully Signed Up to SpeakUP! ' + user.username);
+				}
+				res.redirect('/blogs');
+			});
 		});
 	});
 });
@@ -97,19 +132,29 @@ router.get('/users/:id/edit', function(req, res) {
 });
 
 //Update ROUTE
-router.put('/users/:id', function(req, res) {
-	var newData = {
-		firstName: req.body.firstName,
-		lastName: req.body.lastName,
-		email: req.body.email,
-		avatar: req.body.avatar,
-		bio: req.body.bio
-	};
-	User.findByIdAndUpdate(req.params.id, { $set: newData }, function(err, user) {
+router.put('/users/:id', upload.single('image'), function(req, res) {
+	User.findById(req.params.id, async function(err, user) {
 		if (err) {
+			req.flash('error', err.message);
 			res.redirect('back');
 		} else {
-			req.flash('success', 'Profile Updated!');
+			if (req.file) {
+				try {
+					await cloudinary.v2.uploader.destroy(user.avatarId);
+					var result = await cloudinary.v2.uploader.upload(req.file.path);
+					user.avatarId = result.public_id;
+					user.avatar = result.secure_url;
+				} catch (err) {
+					req.flash('error', err.message);
+					res.redirect('back');
+				}
+			}
+			user.firstName = req.body.firstName;
+			user.lastName = req.body.lastName;
+			user.email = req.body.email;
+			user.bio = req.body.bio;
+			user.save();
+			req.flash('success', 'Profile Updated Successfully!');
 			res.redirect('/users/' + user._id);
 		}
 	});
